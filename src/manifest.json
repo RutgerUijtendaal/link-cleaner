@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Link Cleaner",
+    "version": "0.1.0",
+    "description": "Automatically removes tracking parameters from YouTube links on the pages you browse.",
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["content.js"],
+            "run_at": "document_start",
+            "all_frames": true
+        }
+    ]
+}
