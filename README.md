@@ -29,12 +29,15 @@ The extension removes `si`, `feature`, `gclid`, `fbclid` and `utm_*` from HTTP(S
 links to `youtu.be`, `youtube.com` and YouTube subdomains. It preserves other query
 bytes and fragments, including video IDs, timestamps, playlists and positions.
 
-The content script inspects anchor and image-map destinations. It watches added
-subtrees and href changes and cleans links before ordinary link interactions.
+The content script inspects anchor and image-map destinations. When a link's label
+is itself a URL pointing to the same cleaned destination, it cleans that label too,
+including URLs split across nested spans. Custom labels such as "Watch video",
+unrelated URL labels, icons and nested elements remain intact. It watches added
+subtrees, href changes and link-text updates, and cleans links before interactions.
 It uses no network requests, storage, cookies, clipboard API or background worker.
 Chrome's site-access controls determine which websites it can modify.
 
-It does not sweep shadow trees, unwrap redirect URLs, rewrite plain text or share
+It does not sweep shadow trees, unwrap redirect URLs, rewrite text outside links or share
 fields, intercept the clipboard, clean the address bar or block requests.
 Protected browser pages cannot run the script, and page scripts that navigate
 using their own stored URLs can bypass changes to DOM links. Removing parameters
@@ -50,6 +53,7 @@ This runs ESLint, TypeScript, the behavior tests and the build. Individual comma
 are `npm run lint`, `npm run typecheck`, `npm test` and `npm run build`.
 
 - `src/clean-url.ts`: conservative URL cleaning.
+- `src/clean-link-text.ts`: matching URL labels without replacing nested markup.
 - `src/observe-links.ts`: initial scan, mutation observation and interaction hooks.
 - `src/content.ts` and `src/manifest.json`: extension entry point and page access.
 - `tests/`: URL-preservation and DOM behavior tests.

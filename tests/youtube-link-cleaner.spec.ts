@@ -70,6 +70,62 @@ describe('page links', () => {
         expect(link.getAttribute('href')).toBe('https://youtu.be/new?t=4');
     });
 
+    it.each([
+        [' https://youtu.be/id?si=x&t=90 ', ' https://youtu.be/id?t=90 '],
+        ['youtu.be/id?si=x&t=90', 'youtu.be/id?t=90'],
+        ['//youtu.be/id?si=x&t=90', '//youtu.be/id?t=90'],
+    ])('cleans a matching URL label: %s', (label, expected) => {
+        const link = document.createElement('a');
+        link.href = 'https://youtu.be/id?si=x&t=90';
+        link.textContent = label;
+        document.body.append(link);
+        stop = observeYouTubeLinks(document);
+        expect(link.textContent).toBe(expected);
+        expect(link.href).toBe('https://youtu.be/id?t=90');
+    });
+
+    it('preserves nested elements, icons and listeners while cleaning split URL text', () => {
+        document.body.innerHTML = '<a href="https://youtu.be/id?t=90"><img alt=""><span>https://youtu.be/id?si=</span><b>x&amp;t=90</b></a>';
+        const link = document.querySelector('a')!;
+        const children = [...link.children];
+        let clicked = false;
+        children[1].addEventListener('click', () => { clicked = true; });
+        stop = observeYouTubeLinks(document);
+        expect(link.textContent).toBe('https://youtu.be/id?t=90');
+        expect([...link.children]).toEqual(children);
+        children[1].dispatchEvent(new Event('click', { bubbles: true }));
+        expect(clicked).toBe(true);
+    });
+
+    it('cleans URL labels added or edited after the destination is already clean', async () => {
+        document.body.innerHTML = '<a href="https://youtu.be/id">Video</a>';
+        const link = document.querySelector('a')!;
+        stop = observeYouTubeLinks(document);
+        (link.firstChild as Text).data = 'https://youtu.be/id?si=late';
+        await flush();
+        expect(link.textContent).toBe('https://youtu.be/id');
+        link.innerHTML = '<span>https://youtu.be/id?feature=share</span>';
+        await flush();
+        expect(link.textContent).toBe('https://youtu.be/id');
+    });
+
+    it('preserves unrelated URL labels and text outside links', () => {
+        const label = 'https://youtu.be/other?si=x';
+        document.body.innerHTML = `<a href="https://youtu.be/id?si=x">${label}</a><p>${label}</p>`;
+        stop = observeYouTubeLinks(document);
+        expect(document.querySelector('a')!.textContent).toBe(label);
+        expect(document.querySelector('p')!.textContent).toBe(label);
+    });
+
+    it('preserves literal URL characters when removing multiple tracking parameters', () => {
+        const link = document.createElement('a');
+        link.href = 'https://youtu.be/id?si=x&custom=$&t=90&utm_source=chat#part';
+        link.textContent = link.href;
+        document.body.append(link);
+        stop = observeYouTubeLinks(document);
+        expect(link.textContent).toBe('https://youtu.be/id?custom=$&t=90#part');
+    });
+
     it.each(['click', 'auxclick', 'contextmenu', 'keydown', 'pointerdown'])('cleans before %s even before the observer runs', type => {
         stop = observeYouTubeLinks(document);
         document.body.innerHTML = '<a href="https://youtu.be/id?si=x"><span>Video</span></a>';

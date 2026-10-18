@@ -1,6 +1,7 @@
 import { cleanYouTubeUrl } from './clean-url';
+import { cleanLinkText } from './clean-link-text';
 
-/** Observe only link destinations and added subtrees, never page text. */
+/** Keep link destinations and matching URL labels clean as pages change. */
 export function observeYouTubeLinks(document: Document): () => void {
     const selector = 'a[href], area[href]';
 
@@ -10,6 +11,7 @@ export function observeYouTubeLinks(document: Document): () => void {
         if (href === null) return;
         const cleaned = cleanYouTubeUrl(href, document.baseURI);
         if (cleaned !== href) element.setAttribute('href', cleaned);
+        cleanLinkText(element, cleaned, document.baseURI);
     };
 
     const cleanTree = (node: Node) => {
@@ -25,10 +27,19 @@ export function observeYouTubeLinks(document: Document): () => void {
                 cleanLink(mutation.target);
             } else {
                 mutation.addedNodes.forEach(cleanTree);
+                const parent = mutation.target instanceof Element ? mutation.target : mutation.target.parentElement;
+                const link = parent?.closest(selector);
+                if (link) cleanLink(link);
             }
         }
     });
-    observer.observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] });
+    observer.observe(document, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['href'],
+    });
     document.querySelectorAll(selector).forEach(cleanLink);
 
     // Cover interaction before a queued mutation callback, including keyboard,
