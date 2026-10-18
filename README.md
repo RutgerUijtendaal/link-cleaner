@@ -4,7 +4,20 @@ A standalone Chrome Manifest V3 extension that removes tracking parameters from
 links on the pages you browse. It currently supports YouTube links, including dynamically
 inserted links and ordinary HTTP(S) frames, without sending data anywhere.
 
-## Build and install
+## Download and install
+
+Download **link-cleaner.zip** from [GitHub Releases](https://github.com/RutgerUijtendaal/link-cleaner/releases).
+Choose the named ZIP asset, not GitHub's source-code archives.
+
+Extract the ZIP into a permanent folder. Open `chrome://extensions`, enable
+**Developer mode**, choose **Load unpacked**, and select the extracted folder
+containing `manifest.json`. Reload existing tabs.
+
+For updates, extract the new ZIP into the same folder, replacing the files, then
+choose **Reload** on the extension's card and reload affected tabs. Unpacked
+installations do not update automatically. No Chrome Web Store listing is published.
+
+## Build from source
 
 Requires Node.js 22 or newer and npm. From this repository:
 
@@ -20,8 +33,6 @@ same two files. To update an unpacked installation, rebuild and choose **Reload*
 on the extension's card, then reload affected tabs.
 
 The source repository is [RutgerUijtendaal/link-cleaner](https://github.com/RutgerUijtendaal/link-cleaner).
-It is currently private. No downloadable release or Chrome Web Store listing has
-been published; repository collaborators can build the extension locally.
 
 ## Behavior and privacy
 
@@ -62,4 +73,26 @@ are `npm run lint`, `npm run typecheck`, `npm test` and `npm run build`.
 The repository owns its source, dependencies, tests and distribution artifacts.
 Foundry is a separate project that presents an article and illustration about it;
 neither repository needs the other's checkout to build or run. Foundry links to
-this repository; future release downloads should also be owned here.
+this repository; release downloads are owned here.
+
+## Release a version
+
+The Check workflow verifies branch pushes and pull requests and saves a build
+artifact. The Release workflow checks a pushed `v*` tag, runs the same full checks,
+and publishes `link-cleaner.zip` with installation instructions and generated
+release notes. It uses GitHub's built-in token; no publishing secret is required.
+
+1. Update `src/manifest.json`, `package.json` and both root version fields in
+   `package-lock.json` to the same three-part numeric version.
+2. Run `npm run check`, commit the changes and integrate them into `main`.
+3. From the intended commit on `main`, create and push the matching tag:
+
+   ```sh
+   git tag v0.1.1
+   git push origin v0.1.1
+   ```
+
+Use the next unused version for subsequent releases. The workflow rejects tags
+that do not match the package, lockfile and extension versions. Do not move or
+reuse published version tags. A failed run can be rerun if no release was created;
+an existing release is never overwritten automatically.
