@@ -29,7 +29,7 @@ npm run build
 Open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**
 and select this project's `dist/extension` directory. Reload existing tabs.
 The portable ZIP is `dist/link-cleaner.zip`; extracting it produces the
-same two files. To update an unpacked installation, rebuild and choose **Reload**
+same extension files, including its icons. To update an unpacked installation, rebuild and choose **Reload**
 on the extension's card, then reload affected tabs.
 
 The source repository is [RutgerUijtendaal/link-cleaner](https://github.com/RutgerUijtendaal/link-cleaner).
@@ -47,6 +47,8 @@ unrelated URL labels, icons and nested elements remain intact. It watches added
 subtrees, href changes and link-text updates, and cleans links before interactions.
 It uses no network requests, storage, cookies, clipboard API or background worker.
 Chrome's site-access controls determine which websites it can modify.
+
+Read the [privacy policy](https://rutgeruijtendaal.github.io/link-cleaner/).
 
 It does not sweep shadow trees, unwrap redirect URLs, rewrite text outside links or share
 fields, intercept the clipboard, clean the address bar or block requests.
@@ -96,3 +98,29 @@ Use the next unused version for subsequent releases. The workflow rejects tags
 that do not match the package, lockfile and extension versions. Do not move or
 reuse published version tags. A failed run can be rerun if no release was created;
 an existing release is never overwritten automatically.
+
+## Store materials and privacy site
+
+`store/listing.md` contains the store description, permission justification,
+reviewer instructions and upload-file inventory. The icon's editable source is
+`store/icon.svg`; its PNG exports in `src/icons/` are included in the ZIP build.
+The screenshot and promotional PNGs in `store/` are ready for the store listing.
+Screenshots show the real extension on the labelled `store/demo.html` fixture.
+
+To regenerate the icon exports and store images:
+
+```sh
+npm ci
+npx playwright install chromium
+npm run store:assets
+```
+
+Alternatively, set `STORE_BROWSER_CHANNEL=msedge` to use installed Edge. The
+capture script uses a disposable browser profile, verifies actual link changes,
+and also checks the policy in light, dark and mobile views. Normal builds use the
+committed PNGs and do not require a browser.
+
+`site/index.html` is the maintained privacy policy. The Pages workflow publishes
+only `site/` from `main`, using the `github-pages` environment. The policy lives
+at https://rutgeruijtendaal.github.io/link-cleaner/. Foundry does not own it.
+Store submission itself remains a manual action in the developer dashboard.

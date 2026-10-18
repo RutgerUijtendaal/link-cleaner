@@ -22,8 +22,15 @@ await writeFile(new URL('manifest.json', output), manifest);
 
 // Fixed archive timestamps make identical builds reproducible.
 const options = { mtime: new Date('2020-01-01T00:00:00Z') };
-await writeFile(new URL('dist/link-cleaner.zip', root), zipSync({
+const files = {
     'manifest.json': [manifest, options],
     'content.js': [content, options],
-}));
+};
+for (const path of Object.values(JSON.parse(manifest.toString()).icons)) {
+    const icon = await readFile(new URL(`src/${path}`, root));
+    await mkdir(new URL('icons/', output), { recursive: true });
+    await writeFile(new URL(path, output), icon);
+    files[path] = [icon, options];
+}
+await writeFile(new URL('dist/link-cleaner.zip', root), zipSync(files));
 console.log('Built dist/extension and dist/link-cleaner.zip');

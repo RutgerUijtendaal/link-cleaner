@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Link Cleaner · demonstration page</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f5f3eb;color:#244d40;font:18px/1.5 Arial,sans-serif}
+    main{width:1280px;height:800px;padding:40px 64px;position:relative;overflow:hidden}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;font-size:20px;font-weight:700}
+    .brand{display:flex;gap:10px;align-items:center}.brand img{width:48px;height:48px}
+    header small{font-size:12px;letter-spacing:2px;color:#657a68;font-weight:600}
+    h1{font:normal 68px/1.06 Georgia,serif;letter-spacing:-2px;margin:0 0 18px;max-width:880px}
+    .intro{font-size:21px;color:#637565;margin:0 0 30px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    article{background:#fffdf7;border:1px solid #d9dfd2;border-radius:20px;padding:28px;min-height:207px}
+    article.clean{background:#244d40;color:#f7f5e9;border-color:#244d40}
+    .label{font-size:12px;font-weight:700;letter-spacing:1.7px;text-transform:uppercase;margin-bottom:20px;color:#64765e}
+    .clean .label{color:#c3d4bb}
+    code,a.url{font:19px/1.8 Consolas,monospace;overflow-wrap:anywhere;text-decoration:none;color:inherit;display:block}
+    mark{background:#f6d8a3;color:#6b4a1a;border-radius:4px;padding:3px 0}
+    .detail{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:20px;padding:22px 28px;background:#e7eddf;border-radius:18px}
+    .detail a{color:#244d40;font-weight:600;text-underline-offset:4px}
+    .detail span{color:#637565;font-size:16px}
+    footer{position:absolute;bottom:35px;left:64px;right:64px;display:flex;justify-content:space-between;font-size:13px;color:#64765e}
+    .pill{display:inline-block;border:1px solid #b9c9b0;border-radius:20px;padding:4px 12px;margin:0 8px 14px 0;font-size:13px}
+  </style>
+</head>
+<body><main>
+  <header><div class="brand"><img src="/icon.svg" alt="">Link Cleaner</div><small>CHROME EXTENSION</small></header>
+  <div id="example"></div>
+  <footer><span>Demonstration page · actual extension output</span><span>Local processing. No analytics.</span></footer>
+</main>
+<script>
+  const context = new URLSearchParams(location.search).has('context');
+  document.querySelector('#example').innerHTML = context ? `
+    <h1>Keep the useful bits.</h1>
+    <p class="intro">Timestamps, playlists and video IDs stay right where they belong.</p>
+    <div><span class="pill">Video preserved</span><span class="pill">Playlist preserved</span><span class="pill">Starts at 90 seconds</span></div>
+    <div class="grid">
+      <article><div class="label">Original shared URL</div><code>https://www.youtube.com/watch?<br>v=VIDEO&amp;list=PLAYLIST&amp;t=90<br><mark>&amp;utm_source=chat&amp;si=example</mark></code></article>
+      <article class="clean"><div class="label">Cleaned automatically</div><a class="url" id="cleaned" href="https://www.youtube.com/watch?v=VIDEO&amp;list=PLAYLIST&amp;t=90&amp;utm_source=chat&amp;si=example">https://www.youtube.com/watch?v=VIDEO&amp;list=PLAYLIST&amp;t=90&amp;utm_source=chat&amp;si=example</a></article>
+    </div>
+    <div class="detail"><a id="custom" href="https://youtu.be/VIDEO?si=example&amp;t=90">Watch video ↗</a><span>Custom link labels stay intact, too.</span></div>` : `
+    <h1>Cleaner links.<br>Same destination.</h1>
+    <p class="intro">Remove YouTube tracking parameters as you browse.</p>
+    <div class="grid">
+      <article><div class="label">Original shared URL</div><code>https://youtu.be/VIDEO?<mark>si=example&amp;</mark>t=90</code></article>
+      <article class="clean"><div class="label">With Link Cleaner</div><a class="url" id="cleaned" href="https://youtu.be/VIDEO?si=example&amp;t=90"><span>https://youtu.be/VIDEO?</span><span>si=example&amp;t=90</span></a></article>
+    </div>
+    <div class="detail"><strong>The destination and visible URL both get cleaned.</strong><span>Works across websites.</span></div>`;
+</script>
+</body>
+</html>

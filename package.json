@@ -1,6 +1,6 @@
 {
     "name": "link-cleaner",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "type": "module",
     "description": "A Chrome extension that removes tracking parameters from YouTube links locally.",
@@ -16,7 +16,8 @@
         "lint": "eslint . --max-warnings=0",
         "typecheck": "tsc --noEmit",
         "test": "vitest run",
-        "check": "npm run lint && npm run typecheck && npm test && npm run build"
+        "check": "npm run lint && npm run typecheck && npm test && npm run build",
+        "store:assets": "node scripts/store-assets.mjs"
     },
     "devDependencies": {
         "@eslint/js": "9.34.0",
@@ -25,6 +26,7 @@
         "fflate": "0.8.3",
         "globals": "16.3.0",
         "happy-dom": "20.14.5",
+        "playwright": "1.64.1",
         "typescript": "5.9.2",
         "typescript-eslint": "8.41.0",
         "vitest": "3.2.7"
